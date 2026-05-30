@@ -1,0 +1,1718 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KGTI(王牛TI)</title>
+  <style>
+   :root {
+  --bg: #0a0a0a;           /* 极黑背景 */
+  --panel: #141414;        /* 深灰卡片 */
+  --text: #f0f0f0;         /* 浅灰白主文字 */
+  --muted: #9a9a9a;        /* 灰辅助文字 */
+  --line: #2a2a2a;         /* 暗红黑边框 */
+  --soft: #1f1a1a;         /* 红黑浅色背景 */
+  --accent: #8b1a1a;       /* 暗红色（强调色） */
+  --accent-strong: #c41e3a; /* 鲜红（强强调色/按钮/选中） */
+  --shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+}
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  background: #0a0a0a;
+  color: var(--text);
+  min-height: 100vh;
+}
+    .shell {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 24px 16px 56px;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .hero {
+      padding: 28px;
+      margin-top: 20px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -60px;
+      top: -60px;
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      background: linear-gradient(180deg, rgba(127, 165, 134, 0.18), rgba(127, 165, 134, 0.02));
+      pointer-events: none;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--accent-strong);
+      border: 1px solid var(--line);
+      background: var(--soft);
+      border-radius: 999px;
+      padding: 8px 12px;
+      margin-bottom: 16px;
+    }
+
+    h1, h2, h3, p { margin: 0; }
+    .hero h1 {
+      font-size: clamp(28px, 5vw, 52px);
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+      max-width: 680px;
+    }
+    .hero .sub {
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.75;
+      max-width: 720px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.3fr 0.9fr;
+      gap: 18px;
+      align-items: stretch;
+      margin-top: 24px;
+    }
+
+    .mini-panel {
+      padding: 18px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, #fbfefb, #f3f8f4);
+    }
+
+    .mini-panel h3 {
+      font-size: 15px;
+      margin-bottom: 10px;
+    }
+
+    .mini-panel ul {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--muted);
+      line-height: 1.8;
+      font-size: 14px;
+    }
+
+        .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 22px;
+    }
+    .hero-minimal {
+      min-height: 48vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 42px 20px;
+    }
+    .hero-minimal::after { display: none; }
+    .hero-minimal h1 {
+      max-width: none;
+      margin: 0;
+    }
+    .hero-actions-single {
+      justify-content: center;
+      margin-top: 28px;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+      transition: transform .16s ease, box-shadow .16s ease, opacity .16s ease;
+      font: inherit;
+    }
+
+    button:hover { transform: translateY(-1px); }
+    button:disabled { cursor: not-allowed; opacity: 0.55; transform: none; }
+
+    .btn-primary {
+      background: var(--accent-strong);
+      color: #fff;
+      padding: 14px 20px;
+      border-radius: 14px;
+      box-shadow: 0 12px 30px rgba(77, 106, 83, 0.18);
+      font-weight: 700;
+    }
+
+    .btn-secondary {
+      background: #fff;
+      color: var(--accent-strong);
+      padding: 14px 20px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      font-weight: 700;
+    }
+
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    .result-wrap {
+  margin-top: 22px;
+  padding: 22px;
+  background: transparent;
+}
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+
+    .progress {
+  flex: 1;
+  min-width: 240px;
+  height: 10px;
+  background: #4a4a4a;
+  border-radius: 999px;
+  overflow: hidden;
+  position: relative;
+}
+
+    .progress > span {
+      display: block;
+      width: 0;
+      height: 100%;
+      background: linear-gradient(90deg, #c41e3a, #8b1a1a);
+      border-radius: inherit;
+      transition: width .22s ease;
+    }
+
+    .progress-text {
+      color: var(--muted);
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .question-list {
+      display: grid;
+      gap: 16px;
+    }
+
+    .question {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 18px;
+      background: linear-gradient(180deg, #1a1a1a, #141414);
+    }
+
+    .question-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 999px;
+  padding: 6px 10px;
+  background: #4a4a4a;
+  border: 1px solid var(--line);
+}
+
+    .question-title {
+      font-size: 16px;
+      line-height: 1.7;
+      white-space: pre-wrap;
+    }
+
+    .options {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .option {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 14px 14px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: #1a1a1a;
+      transition: border-color .16s ease, background .16s ease, transform .16s ease;
+    }
+
+    .option:hover {
+  border-color: #c41e3a;
+  background: #2a1a1a;
+}
+
+    .option input {
+      margin-top: 3px;
+      accent-color: var(--accent-strong);
+      transform: scale(1.1);
+      flex-shrink: 0;
+    }
+
+    .option-code {
+      font-weight: 800;
+      color: var(--accent-strong);
+      min-width: 22px;
+    }
+
+    .actions-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 18px;
+      padding-top: 6px;
+    }
+
+    .hint {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .result-hero {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .type-box,
+    .score-box,
+    .dim-box,
+    .top3-box,
+    .about-box {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 18px;
+      background: linear-gradient(180deg, #ffffff, #fbfdfb);
+    }
+
+    .type-kicker {
+      font-size: 12px;
+      color: var(--accent-strong);
+      margin-bottom: 8px;
+      letter-spacing: .05em;
+    }
+
+    .type-name {
+      font-size: clamp(30px, 5vw, 48px);
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+    }
+
+    .type-subname {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .match {
+      margin-top: 18px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border-radius: 999px;
+      padding: 10px 14px;
+      background: var(--soft);
+      border: 1px solid var(--line);
+      color: var(--accent-strong);
+      font-weight: 700;
+    }
+
+    .type-desc {
+      margin-top: 18px;
+      line-height: 1.85;
+      font-size: 15px;
+      color: var(--text);
+    }
+
+    .score-box h3,
+    .dim-box h3,
+    .top3-box h3,
+    .about-box h3 {
+      font-size: 16px;
+      margin-bottom: 12px;
+    }
+
+    .score-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .score-item {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px;
+      background: #fff;
+    }
+
+    .score-item .k {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .score-item .v {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--accent-strong);
+    }
+
+    .dim-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .dim-pill {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px;
+      background: #fff;
+    }
+
+    .dim-pill .label {
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 6px;
+    }
+
+    .dim-pill .value {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--accent-strong);
+    }
+
+    .top3-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .top3-item {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px;
+      background: #fff;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .top3-item strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .top3-item span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .top3-score {
+      color: var(--accent-strong);
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .about-box p {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
+    .footer-note {
+      margin-top: 16px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.7;
+    }
+
+    
+    .result-layout {
+      display: grid;
+      gap: 18px;
+    }
+    .result-top {
+      display: grid;
+      grid-template-columns: 0.9fr 1.1fr;
+      gap: 18px;
+      align-items: stretch;
+    }
+   .poster-box, .type-box, .analysis-box, .dim-box, .note-box {
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 18px;
+  background: linear-gradient(180deg, #1a1a1a, #141414);
+}
+        .poster-box {
+  display: grid;
+  grid-template-rows: 1fr auto;
+  min-height: 280px;
+  overflow: hidden;
+  position: relative;
+  background:
+    radial-gradient(circle at top right, rgba(196,30,58,0.16), rgba(196,30,58,0) 40%),
+    linear-gradient(180deg, #1a1a1a, #141414);
+}
+    .poster-box::after {
+      content: "";
+      position: absolute;
+      right: -46px;
+      bottom: -46px;
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      background: linear-gradient(180deg, rgba(127,165,134,0.12), rgba(127,165,134,0.01));
+      pointer-events: none;
+    }
+    .poster-image {
+      width: 100%;
+      min-height: 220px;
+      max-height: 460px;
+      object-fit: contain;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.75);
+      position: relative;
+      z-index: 1;
+    }
+    .poster-box.no-image .poster-image {
+      display: none;
+    }
+    .poster-caption {
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.8;
+      position: relative;
+      z-index: 1;
+    }
+    .type-kicker {
+      font-size: 12px;
+      color: var(--accent-strong);
+      margin-bottom: 8px;
+      letter-spacing: .06em;
+    }
+    .type-name {
+      font-size: clamp(30px, 5vw, 48px);
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+    }
+    .type-subname {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.8;
+    }
+    .match {
+      margin-top: 18px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border-radius: 999px;
+      padding: 10px 14px;
+      background: var(--soft);
+      border: 1px solid var(--line);
+      color: var(--accent-strong);
+      font-weight: 700;
+      font-size: 14px;
+      line-height: 1.4;
+    }
+    .analysis-box h3, .dim-box h3, .note-box h3 {
+      font-size: 16px;
+      margin-bottom: 12px;
+    }
+    .result-actions {
+      margin-top: 22px;
+      display: flex;
+      justify-content: flex-end;
+    }
+    .analysis-box p {
+      margin: 0;
+      color: #304034;
+      font-size: 15px;
+      line-height: 1.9;
+      white-space: pre-wrap;
+    }
+    .dim-list {
+      display: grid;
+      gap: 12px;
+    }
+    .dim-item {
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 14px;
+  background: #1a1a1a;
+}
+    .dim-item-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 10px;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+    }
+    .dim-item-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .dim-item-score {
+      color: var(--accent-strong);
+      font-weight: 800;
+      font-size: 14px;
+      white-space: nowrap;
+    }
+    .dim-item p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.8;
+    }
+    .note-box p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.8;
+    }
+
+   .author-box {
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: linear-gradient(180deg, #1a1a1a, #141414);
+  overflow: hidden;
+}
+    .author-box summary {
+      list-style: none;
+      cursor: pointer;
+      padding: 18px;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .author-box summary::-webkit-details-marker { display: none; }
+    .author-box summary::after {
+      content: '展开';
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent-strong);
+      border: 1px solid var(--line);
+      background: var(--soft);
+      padding: 6px 10px;
+      border-radius: 999px;
+      flex-shrink: 0;
+    }
+    .author-box[open] summary::after {
+      content: '收起';
+    }
+    .author-content {
+      border-top: 1px solid var(--line);
+      padding: 0 18px 18px;
+    }
+    .author-content p {
+      margin: 14px 0 0;
+     color: #c0c0c0;
+      font-size: 14px;
+      line-height: 1.9;
+    }
+
+    .result-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 22px;
+    }
+    @media (max-width: 860px) {
+      .result-top { grid-template-columns: 1fr; }
+    }
+
+@media (max-width: 860px) {
+      .hero-grid,
+      .result-hero {
+        grid-template-columns: 1fr;
+      }
+      .dim-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 600px) {
+      .shell { padding: 14px 12px 42px; }
+      .hero, .test-wrap,
+.result-wrap {
+  margin-top: 22px;
+  padding: 22px;
+  border-radius: var(--radius);
+}
+      .hero h1 { font-size: 32px; }
+      .question-title { font-size: 15px; }
+      .dim-grid,
+      .score-grid { grid-template-columns: 1fr; }
+    }
+    .analysis-box p,
+#resultDesc {
+  color: var(--text) !important;
+}
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <section id="intro" class="screen active">
+      <div class="hero card hero-minimal">
+        <h1>King Gnu TI      (王牛TI)</h1>
+        <div class="hero-actions hero-actions-single">
+          <button id="startBtn" class="btn-primary">开始测试</button>
+        </div>
+        <div style="margin-top: 2rem; display: flex; flex-direction: column;">
+          <div>
+            </p>作者：小红书@Linker ，因为不是学计算机的，所以用了参考文献：SBTI。</p>
+            </p>是想要送给全体牛民的无料，当然，仅作娱乐用。</p>
+            </p>SBTI原作者：<a href="https://www.bilibili.com/video/BV1LpDHByET6/" rel="noopener noreferrer" target="_blank">
+              B站@Q肉儿串儿</p>
+            </a>
+          </div>
+        </div>
+        </div>
+    </section>
+
+    <section id="test" class="screen">
+      <div class="test-wrap card">
+        <div class="topbar">
+          <div class="progress"><span id="progressBar"></span></div>
+          <div class="progress-text" id="progressText">0 / 31</div>
+        </div>
+
+        <div id="questionList" class="question-list"></div>
+
+        <div class="actions-bottom">
+          <div class="hint" id="testHint">漏题了！！！</div>
+          <div style="display:flex; gap:12px; flex-wrap:wrap;">
+            <button id="backIntroBtn" class="btn-secondary">返回首页</button>
+            <button id="submitBtn" class="btn-primary" disabled>摇曳生命！！！</button>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section id="result" class="screen">
+      <div class="result-wrap card">
+        <div class="result-layout">
+          <div class="result-top">
+            <div class="poster-box" id="posterBox">
+              <img id="posterImage" class="poster-image" alt="人格结果图" />
+              <div id="posterCaption" class="poster-caption"></div>
+            </div>
+            <div class="type-box">
+              <div class="type-kicker" id="resultModeKicker"></div>
+              <div class="type-name" id="resultTypeName"></div>
+              <div class="match" id="matchBadge"></div>
+              <div class="type-subname" id="resultTypeSub"></div>
+            </div>
+          </div>
+          <div class="analysis-box">
+            <h3>说明（作者的文学细胞有点死了，看看就行了。）</h3>
+            <p id="resultDesc"></p>
+          </div>
+          <div class="dim-box">
+            <h3>十五维度评分</h3>
+            <div id="dimList" class="dim-list"></div>
+          </div>
+          <div class="note-box">
+            <h3>友情提示</h3>
+            <p id="funNote"></p>
+          </div>
+        </div>
+        <div class="result-actions">
+          <button id="restartBtn" class="btn-secondary">重新测试</button>
+          <button id="toTopBtn" class="btn-primary">回到首页</button>
+        </div>
+      </div>
+    </section>
+    <details class="author-box">
+            <summary>作者的话</summary>
+            <div class="author-content">
+              <p>由于作者去不了香港的两场live但是想要分享自在摇曳生命的氛围所以一个人苦哈哈的蹲在宿舍听着亚巡歌单一边搓这玩意儿……</p>
+              <p>关于这KGTI，或者顺口点可以叫王牛TI，我只是基于自己的理解和腾讯元宝的理解搓出来的，肯定有很多地方不完善，大家可以到我小红书账号对应的帖子下面评论留言，我看看能不能努力修改一下orz</p>
+              <p>这玩意儿的性质就相当于我从SBTI那里拿了个二手房然后哐哐爆改……虽然有参考的地基但是也改了我好久的……</p>
+              <p>总之时间精力有限，但是热爱牛，好玩为主，玩玩就行了，如果涉及到盈利问题我可能就下不来台面了……orz</p>
+            </div>
+          </details>
+ 
+  
+  
+  <script>
+    const dimensionMeta = {
+      S1: { name: 'S1 自尊自信', model: '自我模型' },
+      S2: { name: 'S2 自我清晰度', model: '自我模型' },
+      S3: { name: 'S3 核心价值', model: '自我模型' },
+      E1: { name: 'E1 依恋安全感', model: '情感模型' },
+      E2: { name: 'E2 情感投入度', model: '情感模型' },
+      E3: { name: 'E3 边界与依赖', model: '情感模型' },
+      A1: { name: 'A1 世界观倾向', model: '态度模型' },
+      A2: { name: 'A2 规则与灵活度', model: '态度模型' },
+      A3: { name: 'A3 人生意义感', model: '态度模型' },
+      Ac1: { name: 'Ac1 动机导向', model: '行动驱力模型' },
+      Ac2: { name: 'Ac2 决策风格', model: '行动驱力模型' },
+      Ac3: { name: 'Ac3 执行模式', model: '行动驱力模型' },
+      So1: { name: 'So1 社交主动性', model: '社交模型' },
+      So2: { name: 'So2 人际边界感', model: '社交模型' },
+      So3: { name: 'So3 表达与真实度', model: '社交模型' }
+    };
+    const questions = [
+      {
+        id: 'q1', dim: 'S1',
+        text: '如果你可以成为牛某首歌中的人物，你最想成为：',
+        options: [
+          { label: '《Prayer X》，在相逢别离循环往复的人生中，我到底该相信些什么', value: 1 },
+          { label: '《Sorrows》，现实总是残酷，趁着醉意起舞，将所有都遗忘', value: 2 },
+          { label: '《BOY》，微笑着前进吧，气喘吁吁的你比谁都美丽', value: 3 }
+        ]
+      },
+      {
+        id: 'q2', dim: 'S1',
+        text: '当你心理脆弱时，你更偏向于听：',
+        options: [
+          { label: '《硝子窓》', value: 1 },
+          { label: '《白日》', value: 2 },
+          { label: '《AIZO》', value: 3 }
+          
+        ]
+      },
+      {
+        id: 'q3', dim: 'S2',
+        text: '我很清楚我最喜欢牛的哪首/哪几首歌',
+        options: [
+          { label: '对，这首/这几首歌的播放次数一骑绝尘遥遥领先', value: 3 },
+          { label: '全都喜欢！！！', value: 2 },
+          { label: '我听的很泛……我只知道我喜欢王牛这种style', value: 1 }
+        ]
+      },
+      {
+        id: 'q4', dim: 'S2',
+        text: '我喜欢王牛的原因可能是：',
+        options: [
+          { label:'跨时代的曲风，艺术与商业的平衡美学，声线、编曲的极致张力&四个有有品的男人，etc', value: 3 },
+          { label:  '🐂🍺的词曲，🐂🍺的演绎，🐂🍺的张力，🐂🍺的……说不出来了，总之🐂🍺', value: 2 },
+          { label: '单纯好听，好听就完事儿了', value: 1 }
+        ]
+      },
+      {
+        id: 'q5', dim: 'S3',
+        text: '你对《SPECIALZ》的解读位于：',
+        options: [
+          { label: '王牛的各位看咒术回战上头了。不过歌和动画确实挺搭，爽！', value: 1 },
+          { label: '在上一选项的基础上，强烈的电子摇滚节奏，大希和理理子的声线交织，歌词中重复的“U R MY SPECIAL”等强烈的口号，与动画《咒术回战-涩谷事变篇》的基调呼应，形成强烈的压迫感，混乱感', value: 2 },
+          { label: '在上两个选项的基础上，个体在混乱中形成了统一，在成长中逐渐形成了自我认同，无论他人如何斥责都要坚持做自己，个体的独特性，“WE R SPECIAL”', value: 3 }
+        ]
+      },
+      {
+        id: 'q6', dim: 'S3',
+        text: '听《Vinyl》时什么更能吸引你：',
+        options: [
+          { label: '层次丰富的编曲，摇滚与古典的碰撞', value: 1 },
+          { label: 'jkl的嘶吼，沙哑到高音的跳跃，sxy鼓点的跟进，节奏的张弛对比', value: 2 },
+          { label: '歌词中对撕掉虚伪回归真实自我的渴望，反叛的美学', value: 3 }
+        ]
+      },
+      {
+        id: 'q7', dim: 'E1',
+        text: '如果有一天《壇上》描绘的解散场景真的发生了：',
+        options: [
+          { label: 'NOOOOOOOOO!!!!!!!没有王牛的世界是不完整的！！！！！！！！你们对的起我买这么多专吗！！！！！！！！！！', value: 1 },
+          { label: '“……我知道，我理解，但是……唉，你们能不能组一辈子乐队……”（很难走出来）', value: 2 },
+          { label: '天下没有不散的宴席，尊重他们的选择，“是吗，解散了啊。”你这么叹了一口气，然后继续听王牛的专', value: 3 }
+        ]
+      },
+      {
+        id: 'q8', dim: 'E1',
+        text: '你更相信哪种方式能真正理解王牛的音乐：',
+        options: [
+          { label: '只有四位成员懂，无论我们如何解读都只能是无限逼近他们真正想表达的意思  ', value: 1 },
+          { label: '多看看各路访谈和解说吧……毕竟有些还是需要专业人士来点评一下的', value: 2 },
+          { label: '每个人都有自己的见解，一千个牛民心中有一千个王牛，从来都没有标准答案', value: 3 }
+        ]
+      },
+      {
+        id: 'q9', dim: 'E2',
+        text: '听完《Don’ stop the clocks》之后，你的状态更接近：',
+        options: [
+          { label: '立刻去分析编曲和其他技术因素', value: 1 },
+          { label: '很好听，但是也应该下一首了', value: 2 },
+          { label: '沉浸在情绪里，至少再循环十遍', value: 3 }
+        ]
+      },
+      {
+        id: 'q10', dim: 'E2',
+        text: '你觉得你对恋爱更像：',
+        options: [
+          { label: '《MASCARA》，回归于平淡甚至平庸', value: 1 },
+          { label: '《あなたは蜃気楼》，虚实交织的沉沦（很抱歉，为了填满题目，我只能解析到这一层）', value: 2 },
+          { label: '《Overflow》，情感的爆发与overflow', value: 3 }
+        ]
+      },
+      {
+      id: 'q10', dim: 'E2',
+        text: '当你看到理理子在台上发疯跳舞：',
+        options: [
+          { label: '缓慢扣出一个“？”', value: 1 },
+          { label: '感叹我们主唱是这样子的，体力真好blabla……，继续沉浸在live中，不会跟跳', value: 2 },
+          { label: '毫不犹豫开团即跟跳，生命本身就是用来摇曳的！！！！', value: 3 }
+        ]
+      },
+      {
+        id: 'q12', dim: 'E3',
+        text: '作为牛民你更接近于：',
+        options: [
+          { label: '列表里有很多同好，希望深度交流，互换物料摩多摩多！！！', value: 5 },
+          { label: '有事没事看看圈内大大太太们都在整什么活，就路过看着玩玩', value: 4 },
+          { label: '不混圈子，我就是个臭听歌的ToT', value: 3 }
+        ]
+      },
+      {
+        id: 'q13', dim: 'A1',
+        text: '世界的本质更像：',
+        options: [
+          { label: 'ctdx的吉他', value: 1 },
+          { label: 'xjhh的贝斯', value: 2 },
+          { label: 'jkl的嗓子', value: 3 }
+        ]
+      },
+      {
+        id: 'q14', dim: 'A1',
+        text: '命运更像：',
+        options: [
+          { label: '键盘', value: 3 },
+          { label: '大提琴', value: 2 },
+          { label: '鼓', value: 1 }
+        ]
+      },
+      {
+        id: 'q15', dim: 'A2',
+        text: '你更倾向于王牛音乐中的哪一种气质：',
+        options: [
+          { label: '精密的编排和歌曲中古典的影子', value: 3 },
+          { label: '快要失控的嘶吼和爆发', value: 1 },
+          { label: '精密的编排和即兴的爆发之间撕扯的平衡', value: 2 }
+        ]
+      },
+      {
+        id: 'q16', dim: 'A2',
+        text: '你更喜欢：',
+        options: [
+          { label: '录音室版的专辑，精心打磨过的细节', value: 1 },
+          { label: 'live的生命力和一点小意外小瑕疵', value: 3 },
+          { label: '我都要', value: 2 }
+        ]
+      },
+      {
+        id: 'q17', dim: 'A3',
+        text: '以下哪句歌词更接近你的人生：',
+        options: [
+          { label: '“過ぎ去った運命に　囚われたままで”<br>我依然被囚禁在过去的命运之中——《泡》', value: 1 },
+          { label: '“Dance dance anyways it’ll works，She says ”<br>跳舞吧 跳舞吧 总会有用的，她说——《Summer Rain Diver》', value: 2 },
+          { label: '“1 life 諦めない限り続く　Endless Party” <br>人生只有一次，只要永不放弃，这场盛会便永无止境——《Stardom》', value: 3 }
+        ]
+      },
+      {
+        id: 'q18', dim: 'A3',
+        text: '凌晨两三点的你躺在床上，翻来覆去最后戴上耳机听王牛的歌。',
+        options: [
+          { label: '是这样的……世界上还有牛我真的太幸福了（哭）睡不着的深夜如果没有牛我怎么办（哭）', value: 1 },
+          { label: '……也许有时会这么做？', value: 2 },
+          { label: '胡扯，明天还要早，起赶紧睡，好听也不能影响我工作/学习', value: 3 }
+        ]
+      },
+      {
+        id: 'q19', dim: 'Ac1',
+        text: '你听王牛的原因：',
+        options: [
+          { label: '从动画/剧过来的，看影片的时候感觉很好听很合适，所以就在歌单里塞了几首王牛的歌', value: 1 },
+          { label: '朋友都听，听了之后还挺好听的，喜欢❤', value: 2 },
+          { label: '灵魂的共鸣~~~~', value: 3 }
+        ]
+      },
+      {
+        id: 'q20', dim: 'Ac1',
+        text: '你觉得王牛上头的本质是：',
+        options: [
+          { label: '音乐的复杂性，每次都会被新的细节击中', value: 3 },
+          { label: '情绪的冲击！对味儿了！！！', value: 2 },
+          { label: '说不清，就是莫名其妙一直听', value: 1 }
+        ]
+      },
+      {
+        id: 'q21', dim: 'Ac2',
+        text: '你如何判断一首歌好不好听（比如之前争议比较大的《TWILIGHT！！！》）：',
+        options: [
+          { label: '分析编曲的层次/复杂度，和声结构，不同乐器的应用，etc', value: 3 },
+          { label: '第一感觉：有没有击中我？电波有没有对上？', value: 2 },
+          { label: '看朋友/社群/流媒体/ai大老师们的评价', value: 1 }
+        ]
+      },
+      {
+        id: 'q22', dim: 'Ac2',
+        text: '如果有人质问你王牛哪里好，你会：',
+        options: [
+          { label: '拉他坐下,按着他的头给他从《Tokyo Rendez-Vous》分析到《THE GREATEST UNKOWN》', value: 3 },
+          { label: '扔给他一堆音乐链接让他自己感受', value: 2 },
+          { label: '发送表情“摇曳生命”/“This is true music”/“我信奉的一直是KingGnu”/……', value: 1 }
+        ]
+      },
+      {
+        id: 'q23', dim: 'Ac3',
+        text: '王牛官方账号突然公布了巡演信息！',
+        options: [
+          { label: '先买了再说！！！再看日期，能去就去，不能去硬去！！！', value: 2 },
+          { label: '收藏了，过两天再说……然后过两天发现没票了😂', value: 1 },
+          { label: '纳尼！？赶紧确认日期场地价格和自己的安排，综合考虑决定买还是不买', value: 3 }
+        ]
+      },
+      {
+        id: 'q24', dim: 'Ac3',
+        text: '能去live的你belike：',
+        options: [
+          { label: '等开场的时候突然想起来忘预习歌词了……紧急学习中……', value: 1 },
+          { label: '在去的车上发现备忘录里有“做攻略/预习合唱曲目”这一项被拖了很久的工作', value: 2 },
+          { label: '提前很早就开始熟悉现场的一些规定/流程/场贩攻略/预习合唱曲目/……我将以完美的形态去见牛', value: 3 }
+        ]
+      },
+      {
+        id: 'q25', dim: 'So1',
+        text: '如果你在普通的街上，看见有人穿着王牛的场贩夹克：',
+        options: [
+          { label: '爱穿穿呗，关我什么事', value: 1 },
+          { label: '多看好几眼👀这里竟然也有牛民吗', value: 2 },
+          { label: '超绝E人超绝搭话：“我信奉的一直是王牛之上神教！”', value: 3 }
+        ]
+      },
+      {
+        id: 'q26', dim: 'So1',
+        text: '社交媒体上刷到有老大正在策划牛民线下聚会，刚好在你居住的城市：',
+        options: [
+          { label: '对线上一起摇曳生命还行，突然说线下面基是不是……有点尴尬？', value: 1 },
+          { label: '有点感兴趣，看看有没有认识的人一起去', value: 2 },
+          { label: '当然要去！！！如果老大需要我也可以帮忙张罗！！！', value: 3 }
+        ]
+      },
+      {
+        id: 'q27', dim: 'So2',
+        text: '对于四位成员的私人生活，你更会：',
+        options: [
+          { label: '好奇🧐，经常看看他们的社交媒体', value: 1 },
+          { label: '刷到了看两眼，哦豁，没刷到不会刻意搜', value: 2 },
+          { label: '不太care，我就是个臭听歌的', value: 3 }
+        ]
+      },
+      {
+        id: 'q28', dim: 'So2',
+        text: '你会给ctdx/jkl/xjhh/sxy 发私信吗：',
+        options: [
+          { label: '会，万一回了呢，发了再说', value: 1 },
+          { label: '……真想过，但是就想想，还是太打扰了就没发', value: 2 },
+          { label: '打咩，这是越界，不要去骚扰人家', value: 3 }
+        ]
+      },
+      {
+        id: 'q29', dim: 'So3',
+        text: '莫名其妙和一个人闲聊了起来，ta问你喜欢听什么样的歌，你会说王牛吗：',
+        options: [
+          { label: '不会……对方要是没听过闲聊就聊不下去了（扶额）', value: 1 },
+          { label: '会，但就简单提一嘴', value: 2 },
+          { label: '会，并且开始安利', value: 3 }
+        ]
+      },
+      {
+        id: 'q30', dim: 'So3',
+        text: '你的朋友圈/社交媒体王牛含量是：',
+        options: [
+          { label: '经常发，这是我的日常', value: 3 },
+          { label: '偶尔发，特别有感触的时候发', value: 2 },
+          { label: '基本不发，或者只在小号发', value: 1 }
+        ]
+      }
+    ];
+    
+    const TYPE_LIBRARY = {
+  "HKJT": {
+    "code": "HKJT",
+    "cn": "白日",
+    "intro": "降りしきる雪よ<br>全てを包み込んでくれ<br>飘落不停的白雪啊<br>将一切掩盖吧",
+    "desc": "表面平静，内里悲怆。你像《白日》一样，走在长长的阴影里，但没停下。你的悲怆是你的底色，但你在里面开出了花。你不说痛，因为你已经习惯了在痛里保持体面。"
+  },
+  "HKTE": {
+    "code": "HKTE",
+    "cn": "飛行艇",
+    "intro": "命摇らせ！！！<br>命摇らせ！！！<br>摇曳生命！！！<br>摇曳生命！！！",
+    "desc": "你将乘上时代的风，掀起风暴，在平淡的生活里，你尽情摇曳生命，庆贺过去，肩负未来。"
+  },
+  "SPCZ": {
+    "code": "SPCZ",
+    "cn": "SPECIALZ",
+    "intro": "あなたはそのままで<br>你要做你自己",
+    "desc": "U R MY SPECIAL. 就算世界不认。你相信自己是特别的，就算全世界都说你不是。你在混沌里打滚，觉得也挺爽。"
+  },
+  "VNYL": {
+    "code": "VNYL",
+    "cn": "VINYL",
+    "intro": "纏ったビニールを脱がせたいの<br>想要脱下缠附的塑料",
+    "desc": "在规则里游走，但不被规则困住,就这样一个都市冷感人。精密、克制、疏离。你看得清规则，但你选择在规则里找到自己的节奏。你不爆发，但你不会灭亡。"
+  },
+  "SBLD": {
+    "code": "SBLD",
+    "cn": "Slumberland",
+    "intro": "Wake up people in Tokyo daydream<br>沉溺在东京梦中的人们啊，醒醒吧",
+    "desc": "你睁眼了。但你发现，醒来也是梦的一部分。东京还在做梦，你只是换了一个梦继续睡。"
+  },
+  "SRYS": {
+    "code": "SRYS",
+    "cn": "千両役者",
+    "intro": "出鳕目な劇を繰り返して<br>筋書きは何時も無理矢理で<br>命を継ぎ接ぎ<br>重复上演的荒唐剧目<br>生搬硬套的情节设定<br>努力缝缝补补着生命",
+    "desc": "“2020年，谁也不曾想过会迎接来这样的时代，但我们能做的也仍然是振作着、满腔热忱地爱着、浓墨重彩地挣扎着活下去。这首歌也就是传达了这些。---常田大希”"
+  },
+  "PYRX": {
+    "code": "PYRX",
+    "cn": "Prayer X",
+    "intro": "出会いと別れを<br>繰り返す日々の中で<br>一体全体何を信じればいい?<br>在相逢与别离<br>循环往复的人生之中<br>我到底该相信些什么",
+    "desc": "在相逢别离里，反复问自己该相信什么。你是《Prayer X》里那个在相逢别离中反复被留下的人。你不确定该相信什么，但你知道不能停在原地。你彷徨，但你还在走。你希望在稍纵即逝的人生中也能大放异彩。"
+  },
+  "MSCR": {
+    "code": "MSCR",
+    "cn": "MASCARA",
+    "intro": "強くなれたならば<br>素直になれるかな<br>如果可以强大起来<br>是否就能变得坦率",
+    "desc": "你盼望着变得强大，渴望真实与坦率。睫毛膏剥落，成年人本就应该与自我和解，在狼狈中变得洒脱。"
+  },
+  "AIZO": {
+    "code": "AIZO",
+    "cn": "AIZO",
+    "intro": "LUV ME❤！LUV ME❤！🎵HATE ME💔！HATE ME💔！🎵KILL ME🔪！KILL ME🔪！🎵",
+    "desc": "LUV ME❤！LUV ME❤！🎵HATE ME💔！HATE ME💔！🎵KILL ME🔪！KILL ME🔪！🎵(作者疯了，不用管😀)"
+  },
+  "BOY": {
+    "code": "BOY",
+    "cn": "BOY",
+    "intro": "走れ遥か先へ<br>汚れた靴と足跡は<br>確かに未来へと<br>向着远方奔跑吧<br>脏污的鞋子与足迹<br>会延伸向明确的未来",
+    "desc": "气喘吁吁，但还在走。你是《BOY》里那个微笑着前进的人。你气喘吁吁，你满头大汗，但你没有停。你不知道终点在哪，但你知道不能停。"
+  },
+  "HRTS": {
+    "code": "HRTS",
+    "cn": "破裂",
+    "intro": "小さな縦びから<br>するりするりと<br>滲んでるよ<br>从小小的破口处<br>一点点地<br>渗透出来",
+    "desc": "你很累了，但是没关系，不用一个人逞强也没有关系。"
+  },
+  "WRLD": {
+    "code": "WRLD",
+    "cn": "It's a small world",
+    "intro": "それもいい<br>也没关系",
+    "desc": "像孩子一般嬉戏，保持天真也没什么不好，对吧？"
+  },
+  "YUMO": {
+    "code": "YUMO",
+    "cn": "ユ一モア",
+    "intro": "ひらりこの夜を踊るんだ<br>在这夜里翩然起舞",
+    "desc": "世界如此复杂，而你翩然起舞。（写不出东西了。你就说你忘不忘得掉常老板叼烟吧！）"
+  },
+  "FLSH": {
+    "code": "FLASH",
+    "cn": "FLASH！！！",
+    "intro": "歯止めは最早効かねえんだ<br>刹车从一开始就没有用。",
+    "desc": "即使遭遇不如意，也要义无反顾狂奔哦！"
+  },
+  "DORN": {
+    "code": "DORN",
+    "cn": "どろん",
+    "intro": "僕ら何を大事に<br>握りしめ切れているんだろうか<br>我们的手中究竟<br>珍重地紧握着什么不愿放开",
+    "desc": "生活无常？社会对个体冷漠筛选？是的，但至少你还有个身份叫牛民，你爱听王牛的歌，这就够了。"
+  },
+  "GSMD": {
+    "code": "GSMD",
+    "cn": "硝子窓",
+    "intro": "誰かが決めた宿命や<br>変えられない運命の中で<br>生き抜く意味を探し続けたい<br>置身于由他人掌控的宿命之中<br>抑或自己无力改变的命运之中<br>我愿不断去寻找活下去的意义",
+    "desc": "玻璃窗映出的是……？接纳自己吧，直面脆弱吧坏掉了修好便是了。"
+  },
+  "TGFV": {
+    "code": "TGFV",
+    "cn": "Teenager Forever",
+    "intro": "歳を重ねても<br>いつまでも相変わらず<br>即便年龄不断地增长<br>我依旧一如既往",
+    "desc": "在无聊的话题中四处寻找幸福的踪迹。（其实只想写主唱触电或常田舞蛇专用曲目（狗头））"
+  },
+  "CLKS": {
+    "code": "CLKS",
+    "cn": "Don’t Stop the Clocks",
+    "intro": "泣かないで。<br>别哭。",
+    "desc": "只要放任自己随风起舞即可。"
+  },
+  "HOLE": {
+    "code": "HOLE",
+    "cn": "The hole",
+    "intro": "ぽっかりと空いたその穴を<br>僕に隠さないで見せておくれよ<br>你心中骤然出现的那个空洞<br>不必对我有所隐瞒 让我看看吧",
+    "desc": "空虚吗？渴望挣扎吗？别想啦……专注在音乐上吧，洞会被填满的o(*￣▽￣*)o"
+  },
+  "MKAI": {
+    "code": "MKAI",
+    "cn": "幕间",
+    "intro": "-没有填词的纯音乐-",
+    "desc": "在静止中蓄势。在幕间完成情绪的转场。"
+  },
+  "KASA": {
+    "code": "KASA",
+    "cn": "傘",
+    "intro": "運命でしょ？<br>都是命运使然？",
+    "desc": "即使假装乐观故作从容，实际内心早已大雨倾盆。但是没有关系，王牛的歌永远会为你撑起一把伞。如果你不想打伞——我们也可以一起在雨里狂奔。都会传达到的哦。"
+  },
+  "POOL": {
+    "code": "POOL",
+    "cn": "Night Pool",
+    "intro": "夢の中へ<br>飛び込んで<br>纵身跃入<br>梦境之中",
+    "desc": "落雨。夜晚。城市。霓虹。让一切都溶化在夜池里。"
+  },
+  "TKYO": {
+    "code": "TKYO",
+    "cn": "Tokyo Rendez-Vous",
+    "intro": "触れてみたいの<br>見てみたいの<br>想要触碰<br>想要遥望",
+    "desc": "在这混沌中全力奔跑吧。从缝隙中窥见幻梦吧。"
+  },
+  "ABKU": {
+    "code": "ABKU",
+    "cn": "泡",
+    "intro": "消えたの<br>いつの間にか<br>不知不觉<br>尽数消散",
+    "desc": "生命的轻盈就在于它的短暂和易碎。于是哀歌，于是反抗。"
+  },
+  "SRWS": {
+    "code": "SRWS",
+    "cn": "Sorrows",
+    "intro": "“Why dont’t you come back to me?”<br>“你为何不回来我身边？”",
+    "desc": "在孤独与脆弱中，你想寻找救赎。颓废的摇滚，包裹温柔的内核。<br>“Cause I know you’re lonely like me”"
+  },
+  "XXXX": {
+    "code": "XXXX",
+    "cn": "摇曳生命型",
+    "intro": "摇就完事儿了",
+    "desc": "命揺らせ！命揺らせ！命揺らせ！命揺らせ！命揺らせ！命揺らせ！命揺らせ！命揺らせ！命揺らせ！命揺らせ！命揺らせ！命揺らせ！命揺らせ！命揺らせ！命揺らせ！命揺らせ！命揺らせ！命揺らせ！命揺らせ！命揺らせ！命揺らせ！命揺らせ！命揺らせ！命揺らせ！命揺らせ！命揺らせ！命揺らせ！命揺らせ！命揺らせ！命揺らせ！"
+  },
+  
+};
+    const TYPE_IMAGES = {
+  "HKJT": "./image/HAKUJITSU.jpg",
+  "HKTE": "./image/HIKOTEI.jpg",
+  "SPCZ": "./image/SPECIALZ.jpg",
+  "VNYL": "./image/TOKYO.jpg",
+  "SBLD": "./image/SYMPA.jpg",
+  "SRYS": "./image/YAKUSHYA.jpg",
+  "PYRX": "./image/PRAYERX.jpg",
+  "MSCR": "./image/MASCARA.jpg",
+  "AIZO": "./image/AIZO.jpg",
+  "BOY": "./image/BOY.jpg",
+  "HRTS": "./image/TOKYO.jpg",
+  "WRLD": "./image/SYMPA.jpg",
+  "YUMO": "./image/CEREMONY.jpg",
+  "FLSH": "./image/FLASH.jpg",
+  "DORN": "./image/CEREMONY.jpg",
+  "GSMD": "./image/GREATEST.jpg",
+  "TGFV": "./image/CEREMONY.jpg",
+  "CLKS": "./image/SYMPA.jpg",
+  "HOLE": "./image/TSYMPA.jpg",
+  "MKAI": "./image/CEREMONY.jpg",
+  "KASA": "./image/KASA.jpg",
+  "POOL": "./image/TOKYO.jpg",
+  "TKYO": "./image/TOKYO.jpg",
+  "ABKU": "./image/ABUKU.jpg",
+  "SRWS": "./image/SYMPA.jpg",
+  "XXXX": "./image/XXXX.jpg",
+
+};
+
+    const NORMAL_TYPES = [
+  {
+    "code": "HKJT",
+    "pattern": "HHH-HMH-MHH-HHH-MHM"
+  },
+  {
+    "code": "HKTE",
+    "pattern": "HHH-HHM-HHH-HMH-MHL"
+  },
+  {
+    "code": "SPCZ",
+    "pattern": "MHM-MMH-MHM-HMH-LHL"
+  },
+  {
+    "code": "VNYL",
+    "pattern": "HHH-HMH-MMH-HHH-LHL"
+  },
+  {
+    "code": "SBLD",
+    "pattern": "MHM-HMM-HHM-MMH-MHL"
+  },
+  {
+    "code": "SRYS",
+    "pattern": "HHL-LMH-LHH-HHM-LHL"
+  },
+  {
+    "code": "PYRX",
+    "pattern": "HHM-HMH-MMH-HHH-MHM"
+  },
+  {
+    "code": "MSCR",
+    "pattern": "HMH-HHL-HMM-HMM-HLH"
+  },
+  {
+    "code": "AIZO",
+    "pattern": "MLH-LHL-HLH-MLM-MLH"
+  },
+  {
+    "code": "BOY",
+    "pattern": "MMH-MHL-HMM-LMM-HLL"
+  },
+  {
+    "code": "HRTS",
+    "pattern": "HLM-MML-MLM-MLM-HLH"
+  },
+  {
+    "code": "WRLD",
+    "pattern": "MMH-MMM-HML-LMM-MML"
+  },
+  {
+    "code": "YUMO",
+    "pattern": "MLH-MHM-MLH-MLH-LMH"
+  },
+  {
+    "code": "FLSH",
+    "pattern": "LLH-LHL-LML-LLL-MLM"
+  },
+  {
+    "code": "DORN",
+    "pattern": "HHL-HMH-MMH-HHM-LHH"
+  },
+  {
+    "code": "GSMD",
+    "pattern": "HHL-HMH-MLH-MHM-LHH"
+  },
+  {
+    "code": "TGFV",
+    "pattern": "HHL-HLH-LMM-HHM-LHH"
+  },
+  {
+    "code": "CLKS",
+    "pattern": "MHL-MLH-LML-MML-LHM"
+  },
+  {
+    "code": "HOLE",
+    "pattern": "HHL-MLH-LMH-HHH-LHL"
+  },
+  {
+    "code": "MKAI",
+    "pattern": "HHL-LLH-LLM-MML-LHM"
+  },
+  {
+    "code": "KASA",
+    "pattern": "LLM-LMM-LLL-LLL-MLM"
+  },
+  {
+    "code": "POOL",
+    "pattern": "LML-LLH-LHL-LML-LHM"
+  },
+  {
+    "code": "TKYO",
+    "pattern": "MLL-LHL-LLM-MLL-HLH"
+  },
+  {
+    "code": "ABKU",
+    "pattern": "LLL-LLM-LML-LLL-LHM"
+  },
+  {
+    "code": "SRWS",
+    "pattern": "LLH-LHL-LML-LLL-MLL"
+  }
+];
+    const DIM_EXPLANATIONS = {
+  "S1": {
+    "L": "你有强烈的自我怀疑，一直在问自己“一体全体何を信じればいい？（我到底该相信什么？）”",
+    "M": "不定性，摇摆，在不同状态间反复横跳，时而坚定时而动摇。这就是你——多维而立体的，就像我没有办法平面化的评价王牛的歌一样",
+    "H": "你有十分强大的精神内核。你一直都在摇曳生命。"
+  },
+  "S2": {
+    "L": "你的播放列表是随机播放的，你自己也是。",
+    "M": "你分得清《SPECIALZ》和《白日》，但分不清今天的自己是真的快乐还是在撑。",
+    "H": "你知道自己为什么活着，就像知道《Vinyl》里那个撕裂的嘶吼是从哪一秒开始的。"
+  },
+  "S3": {
+    "L": "你听王牛不是为了什么空洞的意义，只是王牛刚好能走进你的心里",
+    "M": "你想要点意义，但又觉得大家都没活明白，你急什么。",
+    "H": "你是《Stardom》里那句「1 life 諦めない限り続く Endless Party」的活体注解。"
+  },
+  "E1": {
+    "L": "你怕解散不是怕没歌听，是怕《壇上》那首歌从此不敢点开。",
+    "M": "你相信他们会组一辈子乐队，但已经提前存好了解散后听的歌单",
+    "H": "你听完《壇上》后默默切了下一首。你知道会有曲终人散的那天，但你不害怕告别"
+  },
+  "E2": {
+    "L": "你听王牛，更多听的是编曲的理性而非情感的喷发。",
+    "M": "你被王牛的歌深深击中了，但你假装只是觉得旋律好听。",
+    "H": "世界没有王牛我该怎么活……"
+  },
+  "E3": {
+    "L": "你不需要同好。你可以在世界上的任意一个角落摇曳生命——有歌就行。",
+    "M": "你在同好圈当了三年路人，没说和谁有过深交，但每次收到物料都小心的保存。",
+    "H": "你需要有人和你一起摇，不然你不敢摇。"
+  },
+  "A1": {
+    "L": "《AIZO》或《SPECIALZ》，混乱、暗黑。",
+    "M": "《ユーモア》，在忧郁与希望间寻找平衡点。",
+    "H": "《飛行艇》，乘着时代的翅膀，摇撼生命吧"
+  },
+  "A2": {
+    "L": "没有什么能阻止我奔赴王牛！！！",
+    "M": "平时清醒克制的那个人，为了王牛不管了，冲啊！！！",
+    "H": "对王牛的热爱很多，但永远在可控，不会影响到工作的我。"
+  },
+  "A3": {
+    "L": "哪儿有什么意义，无非就是热爱，这就是最大的意义。",
+    "M": "不知道怎么办的时候，就摇曳生命吧。",
+    "H": "是的，一切都很有意义，很感谢王牛的存在。"
+  },
+  "Ac1": {
+    "L": "歌很爽，和动画/电视剧很搭，爽完就走了。",
+    "M": "你是因为朋友听才听的，听着听着就留下了，现在已经不可自拔了",
+    "H": "你不需要理由。第一次听到王牛的歌的时候，你就知道自己被套牢了。"
+  },
+  "Ac2": {
+    "L": "你等大家告诉你《TWILIGHT!!!》好不好听，你不敢信自己的耳朵。",
+    "M": "你听第一耳朵就决定了，但别人说不好你会犹豫一下。",
+    "H": "你自己就是标准，不用听别人在那里争论"
+  },
+  "Ac3": {
+    "L": "你收藏了巡演链接，然后忘了。你的人生也是这样。",
+    "M": "你抢票的时候手指在发抖，抢到了才发现那天要上班。",
+    "H": "你提前三个月开始练合唱曲目，散场了还能再嗨两个小时"
+  },
+  "So1": {
+    "L": "世界上这么多牛民，但我还是乐意自己听歌",
+    "M": "如果有人一起……那就去面基吧",
+    "H": "呀吼！社交！大家一起来摇曳生命！！！"
+  },
+  "So2": {
+    "L": "你冲上去的那句「我信奉的一直是KingGnu之上神教」，根本没经过大脑。",
+    "M": "你看了三眼，心想要不要搭话，然后电梯门关了。然后转头发帖捞人（）",
+    "H": "你在街上看到别的牛民，心里说了一句「哦」，然后走了。"
+  },
+  "So3": {
+    "L": "有耳机就够了",
+    "M": "在大号发日常，在小号做疯狂牛民",
+    "H": "表现出来的你就是最热爱王牛的你"
+  }
+};
+    const dimensionOrder = ['S1','S2','S3','E1','E2','E3','A1','A2','A3','Ac1','Ac2','Ac3','So1','So2','So3'];
+
+    const app = {
+      shuffledQuestions: [],
+      answers: {},
+      previewMode: false
+    };
+
+    const screens = {
+      intro: document.getElementById('intro'),
+      test: document.getElementById('test'),
+      result: document.getElementById('result')
+    };
+
+    const questionList = document.getElementById('questionList');
+    const progressBar = document.getElementById('progressBar');
+    const progressText = document.getElementById('progressText');
+    const submitBtn = document.getElementById('submitBtn');
+    const testHint = document.getElementById('testHint');
+
+    function showScreen(name) {
+      Object.entries(screens).forEach(([key, el]) => {
+        el.classList.toggle('active', key === name);
+      });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function shuffle(array) {
+      const arr = [...array];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function getVisibleQuestions() {
+      return [...app.shuffledQuestions];
+    }
+
+    function getQuestionMetaLabel(q) {
+      if (q.special) return '补充题';
+      return app.previewMode ? dimensionMeta[q.dim].name : '维度已隐藏';
+    }
+
+    function renderQuestions() {
+      const visibleQuestions = getVisibleQuestions();
+      questionList.innerHTML = '';
+      visibleQuestions.forEach((q, index) => {
+        const card = document.createElement('article');
+        card.className = 'question';
+        card.innerHTML = `
+          <div class="question-meta">
+            <div class="badge">🎵 ${index + 1} </div>
+            <div>${getQuestionMetaLabel(q)}</div>
+          </div>
+          <div class="question-title">${q.text}</div>
+          <div class="options">
+            ${q.options.map((opt, i) => {
+              const code = ['A', 'B', 'C', 'D'][i] || String(i + 1);
+              const checked = app.answers[q.id] === opt.value ? 'checked' : '';
+              return `
+                <label class="option">
+                  <input type="radio" name="${q.id}" value="${opt.value}" ${checked} />
+                  <div class="option-code">${code}</div>
+                  <div>${opt.label}</div>
+                </label>
+              `;
+            }).join('')}
+          </div>
+        `;
+        questionList.appendChild(card);
+      });
+
+      questionList.querySelectorAll('input[type="radio"]').forEach(input => {
+        input.addEventListener('change', (e) => {
+          const { name, value } = e.target;
+          app.answers[name] = Number(value);
+          updateProgress();
+        });
+      });
+
+      updateProgress();
+    }
+
+    function updateProgress() {
+      const visibleQuestions = getVisibleQuestions();
+      const total = visibleQuestions.length;
+      const done = visibleQuestions.filter(q => app.answers[q.id] !== undefined).length;
+      const percent = total ? (done / total) * 100 : 0;
+      progressBar.style.width = `${percent}%`;
+      progressText.textContent = `${done} / ${total}`;
+      const complete = done === total && total > 0;
+      submitBtn.disabled = !complete;
+      testHint.textContent = complete
+        ? '快摇曳生命了！！！'
+        : '漏题了！！！';
+    }
+
+    function sumToLevel(score) {
+      if (score <= 3) return 'L';
+      if (score === 4) return 'M';
+      return 'H';
+    }
+
+    function levelNum(level) {
+      return { L: 1, M: 2, H: 3 }[level];
+    }
+
+    function parsePattern(pattern) {
+      return pattern.replace(/-/g, '').split('');
+    }
+
+ 
+    function computeResult() {
+      const rawScores = {};
+      const levels = {};
+      Object.keys(dimensionMeta).forEach(dim => { rawScores[dim] = 0; });
+
+      questions.forEach(q => {
+        rawScores[q.dim] += Number(app.answers[q.id] || 0);
+      });
+
+      Object.entries(rawScores).forEach(([dim, score]) => {
+        levels[dim] = sumToLevel(score);
+      });
+
+      const userVector = dimensionOrder.map(dim => levelNum(levels[dim]));
+      const ranked = NORMAL_TYPES.map(type => {
+        const vector = parsePattern(type.pattern).map(levelNum);
+        let distance = 0;
+        let exact = 0;
+        for (let i = 0; i < vector.length; i++) {
+          const diff = Math.abs(userVector[i] - vector[i]);
+          distance += diff;
+          if (diff === 0) exact += 1;
+        }
+        const similarity = Math.max(0, Math.round((1 - distance / 30) * 100));
+        return { ...type, ...TYPE_LIBRARY[type.code], distance, exact, similarity };
+      }).sort((a, b) => {
+        if (a.distance !== b.distance) return a.distance - b.distance;
+        if (b.exact !== a.exact) return b.exact - a.exact;
+        return b.similarity - a.similarity;
+      });
+
+      const bestNormal = ranked[0];
+
+      let finalType;
+      let modeKicker = 'TYPE';
+      let badge = `匹配度 ${bestNormal.similarity}% · 精准命中 ${bestNormal.exact}/15 维`;
+      let sub = '说是人格测试，其实大概只是作者想按着你的头喊你听歌了……';
+      let special = false;
+      let secondaryType = null;
+
+      if (bestNormal.similarity < 60) {
+        finalType = TYPE_LIBRARY["XXXX"];
+        modeKicker = '系统强制兜底';
+        badge = `标准人格库最高匹配仅 ${bestNormal.similarity}%`;
+        sub = '……系统把你强制分配给了 XXXX。';
+        special = true;
+      } else {
+        finalType = bestNormal;
+      }
+
+      return {
+        rawScores,
+        levels,
+        ranked,
+        bestNormal,
+        finalType,
+        modeKicker,
+        badge,
+        sub,
+        special,
+        secondaryType
+      };
+    }
+
+    function renderDimList(result) {
+      const dimList = document.getElementById('dimList');
+      dimList.innerHTML = dimensionOrder.map(dim => {
+        const level = result.levels[dim];
+        const explanation = DIM_EXPLANATIONS[dim][level];
+        return `
+          <div class="dim-item">
+            <div class="dim-item-top">
+              <div class="dim-item-name">${dimensionMeta[dim].name}</div>
+              <div class="dim-item-score">${level} / ${result.rawScores[dim]}分</div>
+            </div>
+            <p>${explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+
+   function renderResult() {
+  const result = computeResult();
+  const type = result.finalType;
+
+  document.getElementById('resultModeKicker').textContent = result.modeKicker;
+  document.getElementById('resultTypeName').textContent = `${type.code}（${type.cn}）`;
+  document.getElementById('matchBadge').textContent = result.badge;
+  document.getElementById('resultTypeSub').textContent = result.sub;
+  document.getElementById('resultDesc').textContent = type.desc;
+  document.getElementById('posterCaption').innerHTML = type.intro;
+  document.getElementById('funNote').textContent = result.special
+    ? '这只是个没法去live的牛民搓的无料……玩玩就行了。'
+    : '这只是个没法去live的牛民搓的无料……玩玩就行了。';
+
+  const posterBox = document.getElementById('posterBox');
+  const posterImage = document.getElementById('posterImage');
+  const imageSrc = TYPE_IMAGES[type.code];
+  if (imageSrc) {
+    posterImage.src = imageSrc;
+    posterImage.alt = `${type.code}（${type.cn}）`;
+    posterBox.classList.remove('no-image');
+  } else {
+    posterImage.removeAttribute('src');
+    posterImage.alt = '';
+    posterBox.classList.add('no-image');
+  }
+
+  // ========== 音频播放 ==========
+  const audioMap = {
+    "HKJT": "./audio/hakujitsu.mp3",
+    "HKTE": "./audio/hikotei.mp3",
+    "SPCZ": "./audio/specialz.mp3",
+    "VNYL": "./audio/vinyl.mp3",
+    "SBLD": "./audio/slumberland.mp3",
+    "SRYS": "./audio/yakushya.mp3",
+    "PYRX": "./audio/prayerx.mp3",
+    "MSCR": "./audio/mascara.mp3",
+    "AIZO": "./audio/aizo.mp3",
+    "BOY": "./audio/boy.mp3",
+    "HRTS": "./audio/haretsu.mp3",
+    "WRLD": "./audio/world.mp3",
+    "YUMO": "./audio/yumoa.mp3",
+    "FLSH": "./audio/flash.mp3",
+    "DORN": "./audio/doron.mp3",
+    "GSMD": "./audio/garasumado.mp3",
+    "TGFV": "./audio/teenager.mp3",
+    "CLKS": "./audio/clocks.mp3",
+    "HOLE": "./audio/hole.mp3",
+    "MKAI": "./audio/makuai.mp3",
+    "KASA": "./audio/kasa.mp3",
+    "POOL": "./audio/pool.mp3",
+    "TKYO": "./audio/tokyo.mp3",
+    "ABKU": "./audio/abuku.mp3",
+    "SRWS": "./audio/sorrows.mp3",
+  };
+  const songPath = audioMap[type.code];
+  if (songPath) {
+    if (window.currentAudio) {
+      window.currentAudio.pause();
+      window.currentAudio.currentTime = 0;
+    }
+    const audio = new Audio(songPath);
+    audio.loop = true;   
+    audio.volume = 0.5;  
+    audio.play().catch(e => console.log('自动播放被阻止:', e));
+    window.currentAudio = audio;
+  }
+  renderDimList(result);
+  showScreen('result');
+}
+
+    function startTest(preview = false) {
+      app.previewMode = preview;
+      app.answers = {};
+      app.shuffledQuestions = shuffle(questions);
+      renderQuestions();
+      showScreen('test');
+    }
+
+    document.getElementById('startBtn').addEventListener('click', () => startTest(false));
+    document.getElementById('backIntroBtn').addEventListener('click', () => showScreen('intro'));
+    document.getElementById('submitBtn').addEventListener('click', renderResult);
+    document.getElementById('restartBtn').addEventListener('click', () => startTest(false));
+    document.getElementById('toTopBtn').addEventListener('click', () => showScreen('intro'));
+  </script>
+
+</body>
+</html>
