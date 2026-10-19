@@ -687,7 +687,35 @@
 #resultDesc {
   color: var(--text) !important;
 }
-  </style>
+  
+    /* ===== 官方试听链接（不托管任何音源，只跳转官方平台）===== */
+    .listen-box {
+      margin-top: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+    }
+    .listen-box .listen-label {
+      color: var(--muted);
+    }
+    .listen-box .listen-link {
+      display: inline-flex;
+      align-items: center;
+      padding: 5px 11px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: var(--soft);
+      color: var(--text);
+      text-decoration: none;
+      transition: border-color .16s ease, background .16s ease;
+    }
+    .listen-box .listen-link:hover {
+      border-color: var(--accent-strong);
+      background: #2a1a1a;
+    }
+</style>
 </head>
 <body>
   <div class="shell">
@@ -740,6 +768,7 @@
               <div class="type-name" id="resultTypeName"></div>
               <div class="match" id="matchBadge"></div>
               <div class="type-subname" id="resultTypeSub"></div>
+              <div class="listen-box" id="listenBox"></div>
             </div>
           </div>
           <div class="analysis-box">
@@ -1655,46 +1684,56 @@
     posterBox.classList.add('no-image');
   }
 
-  // ========== 音频播放 ==========
-  const audioMap = {
-    "HKJT": "./audio/hakujitsu.mp3",
-    "HKTE": "./audio/hikotei.mp3",
-    "SPCZ": "./audio/specialz.mp3",
-    "VNYL": "./audio/vinyl.mp3",
-    "SBLD": "./audio/slumberland.mp3",
-    "SRYS": "./audio/yakushya.mp3",
-    "PYRX": "./audio/prayerx.mp3",
-    "MSCR": "./audio/mascara.mp3",
-    "AIZO": "./audio/aizo.mp3",
-    "BOY": "./audio/boy.mp3",
-    "HRTS": "./audio/haretsu.mp3",
-    "WRLD": "./audio/world.mp3",
-    "YUMO": "./audio/yumoa.mp3",
-    "FLSH": "./audio/flash.mp3",
-    "DORN": "./audio/doron.mp3",
-    "GSMD": "./audio/garasumado.mp3",
-    "TGFV": "./audio/teenager.mp3",
-    "CLKS": "./audio/clocks.mp3",
-    "HOLE": "./audio/hole.mp3",
-    "MKAI": "./audio/makuai.mp3",
-    "KASA": "./audio/kasa.mp3",
-    "POOL": "./audio/pool.mp3",
-    "TKYO": "./audio/tokyo.mp3",
-    "ABKU": "./audio/abuku.mp3",
-    "SRWS": "./audio/sorrows.mp3",
+  // ========== 官方试听链接 ==========
+  // 页面不托管任何音源，只跳转到官方平台的搜索页（版权合规）。
+  const songMap = {
+    "HKJT": "hakujitsu",
+    "HKTE": "hikotei",
+    "SPCZ": "SPECIALZ",
+    "VNYL": "VINYL",
+    "SBLD": "Slumberland",
+    "SRYS": "yakushya",
+    "PYRX": "Prayer X",
+    "MSCR": "mascara",
+    "AIZO": "AIZO",
+    "BOY": "BOY",
+    "HRTS": "haretsu",
+    "WRLD": "world",
+    "YUMO": "yumoa",
+    "FLSH": "Flash",
+    "DORN": "doron",
+    "GSMD": "garasumado",
+    "TGFV": "Teenager Forever",
+    "CLKS": "clocks",
+    "HOLE": "hole",
+    "MKAI": "makuai",
+    "KASA": "kasa",
+    "POOL": "pool",
+    "TKYO": "Tokyo",
+    "ABKU": "abuku",
+    "SRWS": "Sorrows",
   };
-  const songPath = audioMap[type.code];
-  if (songPath) {
-    if (window.currentAudio) {
-      window.currentAudio.pause();
-      window.currentAudio.currentTime = 0;
+  const listenBox = document.getElementById('listenBox');
+  if (listenBox) {
+    const song = songMap[type.code];
+    if (song) {
+      const q = encodeURIComponent('King Gnu ' + song);
+      const platforms = [
+        ["YouTube", "https://www.youtube.com/results?search_query=" + q],
+        ["Spotify", "https://open.spotify.com/search/" + q],
+        ["Apple Music", "https://music.apple.com/cn/search?term=" + q],
+      ];
+      listenBox.innerHTML =
+        '<span class="listen-label">试听这首歌</span>' +
+        platforms.map(function (p) {
+          return '<a class="listen-link" href="' + p[1] + '"' +
+                 ' target="_blank" rel="noopener noreferrer">' + p[0] + '</a>';
+        }).join('');
+    } else {
+      listenBox.innerHTML = '';
     }
-    const audio = new Audio(songPath);
-    audio.loop = true;   
-    audio.volume = 0.5;  
-    audio.play().catch(e => console.log('自动播放被阻止:', e));
-    window.currentAudio = audio;
   }
+
   renderDimList(result);
   showScreen('result');
 }
